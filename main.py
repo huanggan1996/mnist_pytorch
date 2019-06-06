@@ -1,4 +1,5 @@
 import torch
+import math
 import torch.nn, torch.optim
 from torch.autograd import Variable
 from torchvision import transforms, models
@@ -44,7 +45,7 @@ def train():
     if args.cuda:
         print('training with cuda')
         model.cuda()
-    optimizer = torch.optim.Adam(model.parameters(), lr=0.01, weight_decay=1e-2)
+    optimizer = torch.optim.Adam(model.parameters(), lr=0.01, weight_decay=1e-3)
     scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, [15, 40], 0.1)
     loss_func = torch.nn.CrossEntropyLoss()
 
@@ -67,14 +68,15 @@ def train():
             train_acc += train_correct.item()
             batch += 1
             print('epoch: %2d/%d batch %3d/%d  Train Loss: %.3f, Acc: %.3f'
-                  % (epoch+1, args.epochs, batch, len(train_data)/args.batch_size+1,
-                     loss.item(), train_correct.item()/len(batch_x)))
+                  % (epoch + 1, args.epochs, batch, math.ceil(len(train_data) / args.batch_size),
+                     loss.item(), train_correct.item() / len(batch_x)))
 
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
         scheduler.step()  # 更新learning rate
-        print('Train Loss: %.6f, Acc: %.3f' % (train_loss / (len(train_data)), train_acc / (len(train_data))))
+        print('Train Loss: %.6f, Acc: %.3f' % (train_loss / (math.ceil(len(train_data)/args.batch_size)),
+                                               train_acc / (len(train_data))))
 
         # evaluation--------------------------------
         model.eval()
@@ -92,7 +94,8 @@ def train():
             pred = torch.max(out, 1)[1]
             num_correct = (pred == batch_y).sum()
             eval_acc += num_correct.item()
-        print('Val Loss: %.6f, Acc: %.3f' % (eval_loss / (len(val_data)), eval_acc / (len(val_data))))
+        print('Val Loss: %.6f, Acc: %.3f' % (eval_loss / (math.ceil(len(val_data)/args.batch_size)),
+                                             eval_acc / (len(val_data))))
 
         #torch.save(model, 'output/model_' + str(epoch+1) + '.pth')
         torch.save(model.state_dict(), 'output/params_' + str(epoch+1) + '.pth')
