@@ -5,16 +5,14 @@ from torch.utils.data import Dataset
 
 
 def image_list(imageRoot, txt='list.txt'):
-    label = 0
     f = open(txt, 'wt')
-    for filename in sorted(os.listdir(imageRoot), reverse=False):
+    for (label, filename) in enumerate(sorted(os.listdir(imageRoot), reverse=False)):
         if os.path.isdir(os.path.join(imageRoot, filename)):
             for imagename in os.listdir(os.path.join(imageRoot, filename)):
                 name, ext = os.path.splitext(imagename)
                 ext = ext[1:]
                 if ext == 'jpg' or ext == 'png' or ext == 'bmp':
                     f.write('%s %d\n' % (os.path.join(imageRoot, filename, imagename), label))
-            label += 1
     f.close()
 
 

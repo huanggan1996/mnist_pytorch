@@ -1,5 +1,5 @@
 import torch
-import torch.nn, torch.optim, torch.cuda
+import torch.nn, torch.optim
 from torch.autograd import Variable
 from torchvision import transforms, models
 import argparse
@@ -23,32 +23,29 @@ args.cuda = not args.no_cuda and torch.cuda.is_available()
 torch.manual_seed(args.seed)
 if args.cuda:
     torch.cuda.manual_seed(args.seed)
+    torch.backends.cudnn.benchmark = True
 
 
 def train():
     os.makedirs('./output', exist_ok=True)
-    ml.image_list(args.datapath, 'output/total.txt')
-    ml.shuffle_split('output/total.txt', 'output/train.txt', 'output/val.txt')
+    if not os.path.exists('output/total.txt'):
+        ml.image_list(args.datapath, 'output/total.txt')
+        ml.shuffle_split('output/total.txt', 'output/train.txt', 'output/val.txt')
 
     train_data = ml.MyDataset(txt='output/train.txt', transform=transforms.ToTensor())
     val_data = ml.MyDataset(txt='output/val.txt', transform=transforms.ToTensor())
     train_loader = DataLoader(dataset=train_data, batch_size=args.batch_size, shuffle=True)
     val_loader = DataLoader(dataset=val_data, batch_size=args.batch_size)
 
-    '''
-    # 调用内置经典模型方式
-    resnet18 = models.resnet18()
-    fc_features = resnet18.fc.in_features
-    resnet18.fc = torch.nn.Linear(fc_features, 10)
-    model = resnet18
-    '''
     model = CnnNet()
-    # model.load_state_dict(torch.load('./output/params_10.pth'))
+    #model = models.resnet18(num_classes=10)  # 调用内置模型
+    #model.load_state_dict(torch.load('./output/params_10.pth'))
 
     if args.cuda:
         print('training with cuda')
         model.cuda()
-    optimizer = torch.optim.Adam(model.parameters())
+    optimizer = torch.optim.Adam(model.parameters(), lr=0.01, weight_decay=1e-2)
+    scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, [15, 40], 0.1)
     loss_func = torch.nn.CrossEntropyLoss()
 
     for epoch in range(args.epochs):
@@ -56,7 +53,7 @@ def train():
         model.train()
         train_loss = 0
         train_acc = 0
-        i = 0
+        batch = 0
         for batch_x, batch_y in train_loader:
             if args.cuda:
                 batch_x, batch_y = Variable(batch_x.cuda()), Variable(batch_y.cuda())
@@ -68,15 +65,15 @@ def train():
             pred = torch.max(out, 1)[1]
             train_correct = (pred == batch_y).sum()
             train_acc += train_correct.item()
-            i += 1
+            batch += 1
             print('epoch: %2d/%d batch %3d/%d  Train Loss: %.3f, Acc: %.3f'
-                  % (epoch+1, args.epochs, i, len(train_data)/args.batch_size+1,
+                  % (epoch+1, args.epochs, batch, len(train_data)/args.batch_size+1,
                      loss.item(), train_correct.item()/len(batch_x)))
 
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
-
+        scheduler.step()  # 更新learning rate
         print('Train Loss: %.6f, Acc: %.3f' % (train_loss / (len(train_data)), train_acc / (len(train_data))))
 
         # evaluation--------------------------------

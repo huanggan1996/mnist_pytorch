@@ -2,7 +2,7 @@ Download the MNIST dataset from [Baidu Drive](https://pan.baidu.com/s/1X-FB-SKUv
 ## Train
 As an example, use the following command to train a PSMNet on Scene Flow
 
-    python main.py --datapath (mnist training data folder)\
+    python main.py --datapath (mnist training data folder)
     　　　　　　　　--batch_size 256
     　　　　　　　　--epochs 10
     　　　　　　　　--no_cuda True
