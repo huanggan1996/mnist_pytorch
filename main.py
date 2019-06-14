@@ -14,7 +14,7 @@ from models.cnnnet import CnnNet
 parser = argparse.ArgumentParser(description='PyTorch MNIST Example')
 parser.add_argument('--datapath', required=True, help='data path')
 parser.add_argument('--batch_size', type=int, default=256, help='training batch size')
-parser.add_argument('--epochs', type=int, default=10, help='number of epochs to train')
+parser.add_argument('--epochs', type=int, default=30, help='number of epochs to train')
 parser.add_argument('--no_cuda', default=False, help='disables CUDA training')
 parser.add_argument('--seed', type=int, default=1, metavar='S', help='random seed (default: 1)')
 
@@ -46,7 +46,7 @@ def train():
         print('training with cuda')
         model.cuda()
     optimizer = torch.optim.Adam(model.parameters(), lr=0.01, weight_decay=1e-3)
-    scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, [15, 40], 0.1)
+    scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, [10, 20], 0.1)
     loss_func = torch.nn.CrossEntropyLoss()
 
     for epoch in range(args.epochs):
@@ -96,9 +96,10 @@ def train():
             eval_acc += num_correct.item()
         print('Val Loss: %.6f, Acc: %.3f' % (eval_loss / (math.ceil(len(val_data)/args.batch_size)),
                                              eval_acc / (len(val_data))))
-
-        #torch.save(model, 'output/model_' + str(epoch+1) + '.pth')
-        torch.save(model.state_dict(), 'output/params_' + str(epoch+1) + '.pth')
+        # save model --------------------------------
+        if (epoch + 1) % 10 == 0:
+            # torch.save(model, 'output/model_' + str(epoch+1) + '.pth')
+            torch.save(model.state_dict(), 'output/params_' + str(epoch + 1) + '.pth')
 
 
 if __name__ == '__main__':

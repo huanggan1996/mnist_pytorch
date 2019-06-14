@@ -1,6 +1,6 @@
 Download the MNIST dataset from [Baidu Drive](https://pan.baidu.com/s/1X-FB-SKUvVvWkXdo_b8SHA), the password is mu8h.
 ## Train
-As an example, use the following command to train a PSMNet on Scene Flow
+As an example, use the following command to train a CNNNet on Mnist
 
     python main.py --datapath (mnist training data folder)
     　　　　　　　　--batch_size 256
