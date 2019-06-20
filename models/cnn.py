@@ -1,9 +1,9 @@
 import torch.nn as nn
 
 
-class CnnNet(nn.Module):
+class Net(nn.Module):
     def __init__(self):
-        super(CnnNet, self).__init__()
+        super(Net, self).__init__()
         self.conv1 = nn.Sequential(
             nn.Conv2d(3, 32, 3, 1, 1),  # 32x28x28
             nn.ReLU(),

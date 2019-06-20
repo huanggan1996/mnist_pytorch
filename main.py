@@ -8,7 +8,7 @@ import os
 from torch.utils.data import DataLoader
 
 from dataloader import mnist_loader as ml
-from models.cnn import CnnNet
+from models.cnn import Net
 
 
 parser = argparse.ArgumentParser(description='PyTorch MNIST Example')
@@ -38,7 +38,7 @@ def train():
     train_loader = DataLoader(dataset=train_data, batch_size=args.batch_size, shuffle=True)
     val_loader = DataLoader(dataset=val_data, batch_size=args.batch_size)
 
-    model = CnnNet()
+    model = Net()
     #model = models.resnet18(num_classes=10)  # 调用内置模型
     #model.load_state_dict(torch.load('./output/params_10.pth'))
 
