@@ -8,7 +8,7 @@ import os
 from torch.utils.data import DataLoader
 
 from dataloader import mnist_loader as ml
-from models.cnnnet import CnnNet
+from models.cnn import CnnNet
 
 
 parser = argparse.ArgumentParser(description='PyTorch MNIST Example')

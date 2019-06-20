@@ -2,7 +2,7 @@ import torch
 import cv2
 from torch.autograd import Variable
 from torchvision import transforms
-from models.cnnnet import CnnNet
+from models.cnn import CnnNet
 
 model = CnnNet()
 model.load_state_dict(torch.load('output/params_10.pth'))
