@@ -1,6 +1,6 @@
 import torch
 import math
-import torch.nn, torch.optim
+import torch.nn as nn
 from torch.autograd import Variable
 from torchvision import transforms, models
 import argparse
@@ -47,7 +47,7 @@ def train():
         model.cuda()
     optimizer = torch.optim.Adam(model.parameters(), lr=0.01, weight_decay=1e-3)
     scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, [10, 20], 0.1)
-    loss_func = torch.nn.CrossEntropyLoss()
+    loss_func = nn.CrossEntropyLoss()
 
     for epoch in range(args.epochs):
         # training-----------------------------------
