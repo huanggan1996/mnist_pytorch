@@ -16,14 +16,10 @@ parser.add_argument('--datapath', required=True, help='data path')
 parser.add_argument('--batch_size', type=int, default=256, help='training batch size')
 parser.add_argument('--epochs', type=int, default=30, help='number of epochs to train')
 parser.add_argument('--no_cuda', default=False, help='disables CUDA training')
-parser.add_argument('--seed', type=int, default=1, metavar='S', help='random seed (default: 1)')
 
 args = parser.parse_args()
-
 args.cuda = not args.no_cuda and torch.cuda.is_available()
-torch.manual_seed(args.seed)
 if args.cuda:
-    torch.cuda.manual_seed(args.seed)
     torch.backends.cudnn.benchmark = True
 
 
