@@ -50,8 +50,7 @@ def train():
         model.train()
         train_loss = 0
         train_acc = 0
-        batch = 0
-        for batch_x, batch_y in train_loader:
+        for batch, (batch_x, batch_y) in enumerate(train_loader):
             if args.cuda:
                 batch_x, batch_y = Variable(batch_x.cuda()), Variable(batch_y.cuda())
             else:
@@ -62,7 +61,6 @@ def train():
             pred = torch.max(out, 1)[1]
             train_correct = (pred == batch_y).sum()
             train_acc += train_correct.item()
-            batch += 1
             print('epoch: %2d/%d batch %3d/%d  Train Loss: %.3f, Acc: %.3f'
                   % (epoch + 1, args.epochs, batch, math.ceil(len(train_data) / args.batch_size),
                      loss.item(), train_correct.item() / len(batch_x)))
